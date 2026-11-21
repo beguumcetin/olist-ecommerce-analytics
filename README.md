@@ -1,3 +1,5 @@
+English | [Türkçe](README.tr.md)
+
 # What drives repeat buying and bad reviews at a Brazilian marketplace
 
 I took the public Olist dataset (about 99,000 orders placed between September 2016 and August 2018) and asked the questions an e-commerce analyst would get on a Monday morning: do customers come back, who are the valuable ones, and what makes people leave a bad review?
