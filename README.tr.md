@@ -79,3 +79,7 @@ python3 -m venv .venv
 ```
 
 Veri: Olist, Brazilian E-Commerce Public Dataset, CC BY-NC-SA 4.0.
+
+## İletişim
+
+Begüm Çetin · begumcetin22@gmail.com · [GitHub](https://github.com/beguumcetin)
