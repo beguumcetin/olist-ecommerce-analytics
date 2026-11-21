@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.DS_Store
+.env
+# The dataset and the database are rebuilt from the Kaggle download.
+data/
+# Local working notes for Claude Code
+CLAUDE.md
+# Per-customer table (6 MB); rebuilt by src.analyze
+reports/tables/mart_rfm.csv
