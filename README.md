@@ -6,7 +6,7 @@ Almost all of the work is SQL. The raw CSVs are loaded into DuckDB and turned in
 
 ## Dashboard
 
-[`docs/index.html`](docs/index.html) is a single-page dashboard with all of the below: monthly orders against late deliveries, review score by delivery delay, a state-by-state breakdown you can switch between lateness, delivery time and review score, the cohort heatmap and the customer segments. It has no dependencies. Download the file and open it in a browser, or serve the `docs/` folder with GitHub Pages. It follows the system light or dark theme and works on a phone.
+**[Open the live dashboard](https://beguumcetin.github.io/olist-ecommerce-analytics/)**. The source, [`docs/index.html`](docs/index.html), is a single-page dashboard with all of the below: monthly orders against late deliveries, review score by delivery delay, a state-by-state breakdown you can switch between lateness, delivery time and review score, the cohort heatmap and the customer segments. It has no dependencies. Download the file and open it in a browser, or serve the `docs/` folder with GitHub Pages. It follows the system light or dark theme and works on a phone.
 
 Rebuild it after changing the SQL with `python -m src.analyze && python -m src.build_dashboard`.
 
