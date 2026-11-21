@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olist customers and deliveries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+:root {
+  --bg: #f7f7f5; --surface: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --muted: #7c7b76;
+  --line: #e4e3df; --blue: #2a78d6; --orange: #eb6834; --hover: rgba(11,11,11,.06);
+  --display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121211; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8e8d85;
+    --line: #33332f; --blue: #3987e5; --orange: #d95926; --hover: rgba(240,239,236,.08);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121211; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8e8d85;
+  --line: #33332f; --blue: #3987e5; --orange: #d95926; --hover: rgba(240,239,236,.08);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.5 var(--body);
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 20px; }
+header { display: grid; gap: 10px; max-width: 760px; padding-bottom: 6px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+h1 { font: 600 clamp(28px, 4.6vw, 44px)/1.08 var(--display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+header p { margin: 0; color: var(--ink-2); font-size: 16px; max-width: 62ch; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
+.kpi .k { font-size: 12px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; font-weight: 500; }
+.kpi .v { font: 600 30px/1.15 var(--display); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.kpi .s { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.kpi .pair { display: flex; gap: 18px; align-items: baseline; flex-wrap: wrap; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px 18px; min-width: 0; grid-column: span 12; }
+@media (min-width: 900px) { .c6 { grid-column: span 6; } .c7 { grid-column: span 7; } .c5 { grid-column: span 5; } }
+.card h2 { font: 600 19px/1.25 var(--display); margin: 0 0 4px; text-wrap: balance; }
+.card .sub { margin: 0 0 14px; color: var(--ink-2); font-size: 13.5px; max-width: 70ch; }
+.chart { position: relative; min-width: 0; }
+svg { display: block; max-width: 100%; overflow: visible; }
+svg text { font: 400 11.5px var(--body); fill: var(--ink-2); }
+svg .val { fill: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+svg .axis { stroke: var(--line); stroke-width: 1; }
+svg .grid-l { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-bottom: 10px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.tabs button { font: 500 13px var(--body); color: var(--ink-2); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+.tabs button[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); background: var(--hover); }
+.tabs button:focus-visible, summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.rows { display: grid; gap: 7px; }
+.row { display: grid; grid-template-columns: minmax(96px, 150px) 1fr 54px; gap: 10px; align-items: center; font-size: 13px; }
+.row .n { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .t { height: 14px; background: var(--hover); border-radius: 3px; position: relative; }
+.row .b { position: absolute; inset: 0 auto 0 0; background: var(--blue); border-radius: 3px; }
+.row .x { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+.seg { display: grid; gap: 4px; margin-bottom: 11px; }
+.seg .n { font-size: 13px; color: var(--ink-2); }
+.seg .l { display: grid; grid-template-columns: 1fr 44px; gap: 8px; align-items: center; }
+.seg .t { height: 10px; background: var(--hover); border-radius: 3px; position: relative; }
+.seg .b { position: absolute; inset: 0 auto 0 0; border-radius: 3px; }
+.seg .x { text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; }
+.note { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); max-width: 70ch; }
+#tip { position: fixed; z-index: 20; pointer-events: none; background: var(--ink); color: var(--bg); padding: 8px 10px; border-radius: 6px; font-size: 12.5px; line-height: 1.45; max-width: 240px; box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+#tip b { font-weight: 600; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 20px; }
+summary { cursor: pointer; font: 600 15px var(--display); }
+.tables { display: grid; gap: 22px; margin-top: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.tscroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--muted); font-weight: 500; }
+footer { color: var(--muted); font-size: 12.5px; display: grid; gap: 4px; max-width: 80ch; }
+footer a { color: var(--ink-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="eyebrow">Olist marketplace · Brazil</div>
+    <h1>Customers rarely come back. Late parcels cost the most.</h1>
+    <p id="lede"></p>
+  </header>
+
+  <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="h-monthly">
+      <h2 id="h-monthly">Late deliveries spiked twice: Black Friday 2017 and again in March 2018</h2>
+      <p class="sub" id="s-monthly"></p>
+      <div class="legend"><span><i class="dot" style="background:var(--blue)"></i>Orders per month</span><span><i class="dot" style="background:var(--orange)"></i>Share delivered late</span></div>
+      <div class="chart" id="ch-monthly"></div>
+    </section>
+
+    <section class="card c6" aria-labelledby="h-delivery">
+      <h2 id="h-delivery"></h2>
+      <p class="sub">Average review score (1 to 5) by how the delivery compared with the date promised at checkout.</p>
+      <div class="chart" id="ch-delivery"></div>
+    </section>
+
+    <section class="card c6" aria-labelledby="h-drivers">
+      <h2 id="h-drivers"></h2>
+      <p class="sub">Change in review score from a regression that holds category, state, order size, freight share and instalments fixed. Lines are 95% confidence intervals.</p>
+      <div class="chart" id="ch-drivers"></div>
+      <p class="note" id="n-drivers"></p>
+    </section>
+
+    <section class="card" aria-labelledby="h-states">
+      <h2 id="h-states">Delivery trouble is concentrated outside São Paulo</h2>
+      <p class="sub">States with at least 1,000 delivered orders, worst first.</p>
+      <div class="tabs" id="state-tabs" role="group" aria-label="Metric">
+        <button data-m="late" aria-pressed="true">Delivered late</button>
+        <button data-m="days" aria-pressed="false">Delivery time</button>
+        <button data-m="score" aria-pressed="false">Review score</button>
+      </div>
+      <div class="rows" id="ch-states"></div>
+    </section>
+
+    <section class="card c7" aria-labelledby="h-cohorts">
+      <h2 id="h-cohorts"></h2>
+      <p class="sub">Share of each monthly cohort of first-time buyers that placed another order, by months since the first purchase. Stronger colour means a higher share.</p>
+      <div class="chart" id="ch-cohorts"></div>
+    </section>
+
+    <section class="card c5" aria-labelledby="h-seg">
+      <h2 id="h-seg"></h2>
+      <p class="sub">Customers scored on how recently they bought and how much they spent.</p>
+      <div class="legend"><span><i class="dot" style="background:var(--blue)"></i>Share of customers</span><span><i class="dot" style="background:var(--orange)"></i>Share of revenue</span></div>
+      <div id="ch-seg"></div>
+    </section>
+  </div>
+
+  <details>
+    <summary>See the numbers</summary>
+    <div class="tables">
+      <div class="tscroll"><table id="t-delivery"></table></div>
+      <div class="tscroll"><table id="t-states"></table></div>
+    </div>
+  </details>
+
+  <footer>
+    <div>Data: Olist Brazilian E-Commerce Public Dataset (Kaggle, CC BY-NC-SA 4.0). About 99,000 orders placed between September 2016 and August 2018.</div>
+    <div>Every figure comes from the SQL tables in the project repository. Late means delivered on a later day than the estimate shown at checkout. The regression is observational and shows association, not cause.</div>
+  </footer>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const D = /*__DATA__*/null;
+const NS = "http://www.w3.org/2000/svg";
+const $ = (s) => document.querySelector(s);
+const n0 = (v) => Math.round(v).toLocaleString("en-US");
+const p1 = (v) => (v * 100).toFixed(1) + "%";
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const monLabel = (s) => MON[+s.slice(5, 7) - 1] + " " + s.slice(2, 4);
+const monLong = (s) => MON[+s.slice(5, 7) - 1] + " " + s.slice(0, 4);
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function svgIn(node, h) {
+  node.textContent = "";
+  const w = Math.max(260, Math.floor(node.clientWidth));
+  const s = el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, role: "img" });
+  node.appendChild(s);
+  return { s, w };
+}
+function niceMax(v) {
+  const p = Math.pow(10, Math.floor(Math.log10(v))), f = v / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+}
+const tip = $("#tip");
+function showTip(html, e) {
+  tip.innerHTML = html; tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+}
+const hideTip = () => { tip.hidden = true; };
+function hover(target, htmlFn, onEnter, onLeave) {
+  const go = (e) => { showTip(htmlFn(), e); onEnter && onEnter(); };
+  target.addEventListener("pointerenter", go);
+  target.addEventListener("pointermove", go);
+  target.addEventListener("pointerleave", () => { hideTip(); onLeave && onLeave(); });
+}
+
+/* ---------- header and KPIs ---------- */
+function drawHeader() {
+  const h = D.headline;
+  $("#lede").textContent =
+    `${n0(h.orders)} orders from ${n0(h.customers)} customers. ${p1(h.repeat_customer_share)} of them ever bought twice, ` +
+    `and orders that arrived late got an average review of ${h.avg_score_late.toFixed(2)} stars against ${h.avg_score_on_time.toFixed(2)} for the rest.`;
+  const k = (label, value, sub) => `<div class="kpi"><div class="k">${label}</div><div class="v">${value}</div><div class="s">${sub}</div></div>`;
+  $("#kpis").innerHTML =
+    k("Orders", n0(h.orders), "Sep 2016 to Aug 2018") +
+    k("Bought again", p1(h.repeat_customer_share), `of ${n0(h.customers)} customers; ${p1(h.repeat_customers_revenue_share)} of revenue`) +
+    k("Delivered late", p1(h.late_share_delivered), "of delivered orders") +
+    `<div class="kpi"><div class="k">Average review</div><div class="pair">
+       <div><div class="v">${h.avg_score_on_time.toFixed(2)}</div><div class="s"><i class="dot" style="background:var(--blue)"></i>on time</div></div>
+       <div><div class="v">${h.avg_score_late.toFixed(2)}</div><div class="s"><i class="dot" style="background:var(--orange)"></i>late</div></div>
+     </div></div>`;
+}
+
+/* ---------- monthly orders + late share ---------- */
+function drawMonthly() {
+  const m = D.monthly, node = $("#ch-monthly");
+  const { s, w } = svgIn(node, 350);
+  const L = 44, R = 8, pw = w - L - R, bw = pw / m.length, x = (i) => L + i * bw;
+  const aTop = 8, aBot = 150, bTop = 208, bBot = 318;
+  const oMax = niceMax(Math.max(...m.map((d) => d.orders)));
+  const lMax = Math.ceil(Math.max(...m.map((d) => d.late)) * 20) / 20;
+  const ya = (v) => aBot - (v / oMax) * (aBot - aTop);
+  const yb = (v) => bBot - (v / lMax) * (bBot - bTop);
+  const band = el("rect", { y: 0, height: bBot + 6, fill: "var(--hover)", opacity: 0, width: bw }, s);
+  for (let t = 0; t <= 4; t++) {
+    const v = (oMax / 4) * t, y = ya(v);
+    el("line", { x1: L, x2: w - R, y1: y, y2: y, class: t ? "grid-l" : "axis" }, s);
+    el("text", { x: L - 6, y: y + 4, "text-anchor": "end" }, s).textContent = n0(v);
+  }
+  for (let t = 0; t <= 4; t++) {
+    const v = (lMax / 4) * t, y = yb(v);
+    el("line", { x1: L, x2: w - R, y1: y, y2: y, class: t ? "grid-l" : "axis" }, s);
+    el("text", { x: L - 6, y: y + 4, "text-anchor": "end" }, s).textContent = Math.round(v * 100) + "%";
+  }
+  m.forEach((d, i) => {
+    const bh = aBot - ya(d.orders);
+    el("rect", { x: x(i) + bw * 0.16, y: ya(d.orders), width: bw * 0.68, height: bh, fill: "var(--blue)", rx: 2 }, s);
+    if (i % 3 === 0) el("text", { x: x(i) + bw / 2, y: bBot + 18, "text-anchor": "middle" }, s).textContent = monLabel(d.month);
+  });
+  const pts = m.map((d, i) => `${x(i) + bw / 2},${yb(d.late)}`).join(" ");
+  el("polyline", { points: pts, fill: "none", stroke: "var(--orange)", "stroke-width": 2, "stroke-linejoin": "round" }, s);
+  const bf = m.findIndex((d) => d.month === "2017-11");
+  if (bf >= 0) {
+    const cx = x(bf) + bw / 2;
+    el("circle", { cx, cy: yb(m[bf].late), r: 4.5, fill: "var(--orange)", stroke: "var(--surface)", "stroke-width": 2 }, s);
+    const a = el("text", { x: cx, y: ya(m[bf].orders) - 6, "text-anchor": "end", class: "val" }, s);
+    a.textContent = "Nov 2017: " + n0(m[bf].orders) + " orders";
+    const b = el("text", { x: cx - 9, y: yb(m[bf].late) - 6, "text-anchor": "end", class: "val" }, s);
+    b.textContent = p1(m[bf].late) + " late";
+  }
+  const pk = m.reduce((a, d, i) => (d.late > m[a].late ? i : a), 0);
+  if (pk !== bf) {
+    const cx = x(pk) + bw / 2;
+    el("circle", { cx, cy: yb(m[pk].late), r: 4.5, fill: "var(--orange)", stroke: "var(--surface)", "stroke-width": 2 }, s);
+    el("text", { x: cx - 9, y: yb(m[pk].late) + 4, "text-anchor": "end", class: "val" }, s).textContent = monLong(m[pk].month) + ": " + p1(m[pk].late) + " late";
+  }
+  const last = m.length - 1;
+  el("circle", { cx: x(last) + bw / 2, cy: yb(m[last].late), r: 3.5, fill: "var(--orange)", stroke: "var(--surface)", "stroke-width": 2 }, s);
+  m.forEach((d, i) => {
+    const hit = el("rect", { x: x(i), y: 0, width: bw, height: bBot + 6, fill: "transparent" }, s);
+    hover(hit, () => `<b>${monLong(d.month)}</b><br>${n0(d.orders)} orders<br>${p1(d.late)} delivered late<br>Average review ${d.score.toFixed(2)}`,
+      () => { band.setAttribute("x", x(i)); band.setAttribute("opacity", 1); }, () => band.setAttribute("opacity", 0));
+  });
+  const by = (k) => m.find((d) => d.month === k), oct = by("2017-10"), nov = by("2017-11"), jan = by("2018-01"), pkm = m[pk];
+  $("#s-monthly").textContent = oct && nov && jan
+    ? `Orders jumped from ${n0(oct.orders)} in October to ${n0(nov.orders)} in November 2017, and ${p1(nov.late)} arrived late (${p1(oct.late)} in October). The worst month was ${monLong(pkm.month)}: ${p1(pkm.late)} late and an average review of ${pkm.score.toFixed(2)}, on about the same volume as January 2018 (${n0(jan.orders)} orders, ${p1(jan.late)} late). So volume alone does not explain the delays.`
+    : "";
+}
+
+/* ---------- delivery vs review ---------- */
+function drawDelivery() {
+  const d = D.delivery, node = $("#ch-delivery");
+  const onTime = d.filter((r) => !r.late), late = d.filter((r) => r.late);
+  const avg = (rows) => rows.reduce((a, r) => a + r.score * r.orders, 0) / rows.reduce((a, r) => a + r.orders, 0);
+  $("#h-delivery").textContent = `Review scores fall from ${avg(onTime).toFixed(1)} to ${late[late.length - 1].score.toFixed(1)} stars as parcels get later`;
+  const H = 340;
+  const { s, w } = svgIn(node, H);
+  const narrow = (w - 34) / d.length < 66;
+  const L = 30, R = 4, T = 20, B = narrow ? 60 : 46, pw = w - L - R, bw = pw / d.length;
+  const y = (v) => H - B - (v / 5) * (290 - B - T);
+  for (let v = 0; v <= 5; v++) {
+    el("line", { x1: L, x2: w - R, y1: y(v), y2: y(v), class: v ? "grid-l" : "axis" }, s);
+    el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end" }, s).textContent = v;
+  }
+  d.forEach((r, i) => {
+    const cx = L + i * bw + bw / 2, bwid = Math.min(46, bw * 0.62);
+    el("rect", { x: cx - bwid / 2, y: y(r.score), width: bwid, height: y(0) - y(r.score), fill: r.late ? "var(--orange)" : "var(--blue)", rx: 2 }, s);
+    el("text", { x: cx, y: y(r.score) - 6, "text-anchor": "middle", class: "val" }, s).textContent = r.score.toFixed(2);
+    const words = r.label.split(" ");
+    const mid = Math.ceil(words.length / 2);
+    (narrow ? words : [words.slice(0, mid).join(" "), words.slice(mid).join(" ")]).forEach((t, k) =>
+      el("text", { x: cx, y: H - B + 16 + k * 13, "text-anchor": "middle" }, s).textContent = t);
+    const hit = el("rect", { x: L + i * bw, y: T, width: bw, height: H - T - B + 30, fill: "transparent" }, s);
+    hover(hit, () => `<b>${r.label}</b><br>${n0(r.orders)} orders<br>Average ${r.score.toFixed(2)} stars<br>${p1(r.low)} gave 1 or 2 stars`);
+  });
+}
+
+/* ---------- regression drivers ---------- */
+function drawDrivers() {
+  const dr = D.drivers, node = $("#ch-drivers");
+  const late = dr[0];
+  $("#h-drivers").textContent = `Lateness alone takes about ${Math.abs(late.coef).toFixed(1)} points off a review`;
+  $("#n-drivers").textContent = `A late order is about ${D.odds_late.toFixed(1)} times as likely to get 1 or 2 stars. Orders with items from several sellers score ${D.headline.score_multi_seller.toFixed(2)} on average against ${D.headline.score_single_seller.toFixed(2)}, although only ${p1(D.headline.late_share_multi_seller)} of them are late; split shipments are a likely reason, but the data has one delivery date per order and cannot confirm it.`;
+  const rowH = 64, h = dr.length * rowH + 30;
+  const { s, w } = svgIn(node, h);
+  const L = 6, R = 16, lo = Math.min(...dr.map((r) => r.lo)) * 1.08, hi = 0;
+  const x = (v) => L + ((v - lo) / (hi - lo)) * (w - L - R);
+  for (let t = 0; t <= 4; t++) {
+    const v = lo + ((hi - lo) / 4) * t;
+    el("line", { x1: x(v), x2: x(v), y1: 0, y2: h - 26, class: v === hi ? "axis" : "grid-l" }, s);
+    el("text", { x: x(v), y: h - 8, "text-anchor": t === 4 ? "end" : t === 0 ? "start" : "middle" }, s).textContent = v.toFixed(1);
+  }
+  dr.forEach((r, i) => {
+    const cy = i * rowH + 44;
+    el("text", { x: L, y: cy - 22 }, s).textContent = r.label;
+    el("line", { x1: x(r.lo), x2: x(Math.min(r.hi, 0)), y1: cy, y2: cy, stroke: "var(--blue)", "stroke-width": 2.5, "stroke-linecap": "round" }, s);
+    el("circle", { cx: x(r.coef), cy, r: 6, fill: "var(--blue)", stroke: "var(--surface)", "stroke-width": 2 }, s);
+    const t = el("text", { x: x(r.coef), y: cy + 20, "text-anchor": "middle", class: "val" }, s);
+    t.textContent = r.coef.toFixed(2);
+    const hit = el("rect", { x: 0, y: i * rowH, width: w, height: rowH, fill: "transparent" }, s);
+    hover(hit, () => `<b>${r.label}</b><br>${r.coef.toFixed(2)} points<br>95% interval ${r.lo.toFixed(2)} to ${r.hi.toFixed(2)}`);
+  });
+}
+
+/* ---------- states ---------- */
+const STATE_METRICS = {
+  late: { f: (r) => r.late, fmt: p1, desc: true },
+  days: { f: (r) => r.days, fmt: (v) => v.toFixed(1) + " d", desc: true },
+  score: { f: (r) => r.score, fmt: (v) => v.toFixed(2), desc: false },
+};
+let stateMetric = "late";
+function drawStates() {
+  const M = STATE_METRICS[stateMetric];
+  const rows = [...D.states].sort((a, b) => (M.desc ? M.f(b) - M.f(a) : M.f(a) - M.f(b)));
+  const max = Math.max(...rows.map(M.f));
+  const box = $("#ch-states");
+  box.textContent = "";
+  rows.forEach((r) => {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<div class="n"></div><div class="t"><div class="b"></div></div><div class="x"></div>`;
+    row.querySelector(".n").textContent = r.name;
+    row.querySelector(".b").style.width = (M.f(r) / (stateMetric === "score" ? 5 : max)) * 100 + "%";
+    row.querySelector(".x").textContent = M.fmt(M.f(r));
+    hover(row, () => `<b>${r.name}</b><br>${n0(r.orders)} delivered orders<br>${p1(r.late)} late<br>${r.days.toFixed(1)} days to deliver<br>Average review ${r.score.toFixed(2)}`);
+    box.appendChild(row);
+  });
+}
+document.querySelectorAll("#state-tabs button").forEach((b) =>
+  b.addEventListener("click", () => {
+    stateMetric = b.dataset.m;
+    document.querySelectorAll("#state-tabs button").forEach((o) => o.setAttribute("aria-pressed", o === b));
+    drawStates();
+  }));
+
+/* ---------- cohort heatmap ---------- */
+function drawCohorts() {
+  const c = D.cohorts, node = $("#ch-cohorts");
+  const h = D.headline;
+  $("#h-cohorts").textContent = `Only about ${(h.month1_repeat_rate * 100).toFixed(1)}% of buyers order again within a month`;
+  const rowH = 19, T = 4, B = 40, L = 58, R = 4;
+  const { s, w } = svgIn(node, c.length * rowH + T + B);
+  const cw = (w - L - R) / 12;
+  const val = (r, k) => (r.back[k] == null ? null : r.back[k] / r.n);
+  const vmax = Math.max(...c.flatMap((r) => r.back.map((_, k) => val(r, k) || 0)));
+  c.forEach((r, i) => {
+    const y = T + i * rowH;
+    el("text", { x: L - 8, y: y + 13, "text-anchor": "end" }, s).textContent = monLabel(r.month);
+    for (let k = 0; k < 12; k++) {
+      const v = val(r, k);
+      if (v == null) continue;
+      const cell = el("rect", { x: L + k * cw + 1, y: y + 1, width: cw - 2, height: rowH - 2, rx: 2, fill: "var(--blue)", "fill-opacity": 0.1 + 0.9 * (v / vmax) }, s);
+      hover(cell, () => `<b>${monLong(r.month)} cohort</b><br>${n0(r.n)} first-time buyers<br>${n0(r.back[k])} ordered again in month ${k + 1}<br>${(v * 100).toFixed(2)}%`);
+    }
+  });
+  for (let k = 0; k < 12; k++) el("text", { x: L + k * cw + cw / 2, y: T + c.length * rowH + 14, "text-anchor": "middle" }, s).textContent = k + 1;
+  el("text", { x: L + (12 * cw) / 2, y: T + c.length * rowH + 32, "text-anchor": "middle" }, s).textContent = "Months after first purchase";
+}
+
+/* ---------- segments ---------- */
+function drawSegments() {
+  const sg = D.segments, box = $("#ch-seg");
+  const lap = sg.find((r) => r.name === "Lapsed, high spend");
+  $("#h-seg").textContent = lap ? `${p1(lap.customers)} of customers who lapsed brought ${p1(lap.revenue)} of revenue` : "Customer segments";
+  box.textContent = "";
+  const max = Math.max(...sg.flatMap((r) => [r.customers, r.revenue]));
+  sg.forEach((r) => {
+    const d = document.createElement("div");
+    d.className = "seg";
+    const bar = (v, color) => `<div class="l"><div class="t"><div class="b" style="width:${(v / max) * 100}%;background:${color}"></div></div><div class="x">${p1(v)}</div></div>`;
+    d.innerHTML = `<div class="n"></div>${bar(r.customers, "var(--blue)")}${bar(r.revenue, "var(--orange)")}`;
+    d.querySelector(".n").textContent = r.name;
+    hover(d, () => `<b>${r.name}</b><br>${p1(r.customers)} of customers<br>${p1(r.revenue)} of revenue`);
+    box.appendChild(d);
+  });
+}
+
+/* ---------- tables ---------- */
+function drawTables() {
+  $("#t-delivery").innerHTML = "<tr><th>Delivery vs promise</th><th>Orders</th><th>Avg review</th><th>1-2 stars</th></tr>" +
+    D.delivery.map((r) => `<tr><td>${r.label}</td><td>${n0(r.orders)}</td><td>${r.score.toFixed(2)}</td><td>${p1(r.low)}</td></tr>`).join("");
+  $("#t-states").innerHTML = "<tr><th>State</th><th>Orders</th><th>Late</th><th>Days</th><th>Review</th></tr>" +
+    D.states.map((r) => `<tr><td>${r.name}</td><td>${n0(r.orders)}</td><td>${p1(r.late)}</td><td>${r.days.toFixed(1)}</td><td>${r.score.toFixed(2)}</td></tr>`).join("");
+}
+
+function drawAll() { drawMonthly(); drawDelivery(); drawDrivers(); drawCohorts(); }
+drawHeader(); drawStates(); drawSegments(); drawTables(); drawAll();
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(drawAll, 120); });
+</script>
+</body>
+</html>

@@ -4,6 +4,12 @@ I took the public Olist dataset (about 99,000 orders placed between September 20
 
 Almost all of the work is SQL. The raw CSVs are loaded into DuckDB and turned into a clean order table and a handful of summary tables by five SQL files in [`sql/`](sql). Python only loads the data, fits one regression and draws the charts.
 
+## Dashboard
+
+[`docs/index.html`](docs/index.html) is a single-page dashboard with all of the below: monthly orders against late deliveries, review score by delivery delay, a state-by-state breakdown you can switch between lateness, delivery time and review score, the cohort heatmap and the customer segments. It has no dependencies. Download the file and open it in a browser, or serve the `docs/` folder with GitHub Pages. It follows the system light or dark theme and works on a phone.
+
+Rebuild it after changing the SQL with `python -m src.analyze && python -m src.build_dashboard`.
+
 ## What I found
 
 **Almost nobody comes back.** 97% of customers placed exactly one order, and only about 0.45% of a monthly cohort buys again in the following month. Repeat customers make up 3% of the customer base and 5.6% of revenue. A churn model would have little to work with here; at this marketplace growth comes almost entirely from new customers.
@@ -18,7 +24,7 @@ That gap is partly because late orders also differ in other ways (they travel fu
 
 ![What lowers the review score](reports/figures/review_drivers.png)
 
-**The 2017 Black Friday month shows how fragile this is.** Orders went from 4,547 in October to 7,421 in November 2017. The share of late deliveries went from 4.2% to 12.4% in the same month, and the average review fell from 4.17 to 3.95.
+**Late deliveries spiked twice, and volume does not explain both.** Orders went from 4,547 in October to 7,421 in November 2017 (Black Friday), and the share of late deliveries went from 4.2% to 12.4% in the same month. But the worst month was March 2018, with 19.0% of orders late and an average review of 3.76, on about the same volume as January 2018 (7,168 orders against 7,187), when only 5.7% were late. Something other than demand broke in February and March 2018; the data cannot say what.
 
 **Lateness is a geography problem.** In São Paulo, 4.5% of deliveries are late and the average delivery takes 8.8 days. In Rio de Janeiro 12.1% are late, in Bahia 12.2% and in Ceará 13.8%, where the average delivery takes 21 days. Average review scores follow: 4.25 in São Paulo against 3.94 in Ceará.
 
@@ -42,6 +48,7 @@ sql/04_rfm.sql           recency, frequency, monetary scores and segments
 sql/05_marts.sql         summary tables for dashboards (monthly, state, category, delivery)
 src/load.py              CSV to DuckDB, then runs the SQL files in order
 src/analyze.py           headline numbers, regression, CSV exports and the figures
+src/build_dashboard.py   bakes the results into docs/index.html (template in dashboard/)
 ```
 
 A few choices worth knowing about:
